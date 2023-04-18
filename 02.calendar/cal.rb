@@ -16,9 +16,9 @@ puts '日 月 火 水 木 金 土'
 
 print '   ' * start_date.wday
 
-(start_date..last_date).each do |day|
-  print day.mday.to_s.center(3)
-  if day.saturday?
+(start_date..last_date).each do |date|
+  print date.mday.to_s.center(3)
+  if date.saturday?
     print "\n"
   end
 end
