@@ -14,10 +14,7 @@ scores.each do |score|
   end
 end
 
-frames = []
-shots.each_slice(2) do |shot|
-  frames << shot
-end
+frames = shots.each_slice(2).to_a
 
 frames.map do |frame|
   frame.pop if frame[0] == 10
