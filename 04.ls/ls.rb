@@ -5,13 +5,13 @@ require 'optparse'
 class AppOption
   def initialize
     OptionParser.new do |opt|
-      opt.on('-l') { find_files }
+      opt.on('-a') { find_files }
       opt.parse(ARGV)
     end
   end
 
   def find_files
-    if ARGV[0] == '-l'
+    if ARGV[0] == '-a'
       Dir.glob('*', File::FNM_DOTMATCH)
     else
       Dir.glob('*')
