@@ -2,11 +2,16 @@
 
 require 'optparse'
 
-def find_files
+def parse_options
   params = {}
   opt = OptionParser.new
   opt.on('-a') { |a| params[:a] = a }
   opt.parse(ARGV)
+  params
+end
+
+def find_files
+  params = parse_options
   flags = params[:a] ? File::FNM_DOTMATCH : 0
   Dir.glob('*', flags)
 end
