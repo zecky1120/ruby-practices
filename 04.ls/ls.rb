@@ -1,16 +1,28 @@
 # frozen_string_literal: true
 
+require 'optparse'
+
+def parse_options
+  params = {}
+  opt = OptionParser.new
+  opt.on('-a') { |a| params[:a] = a }
+  opt.parse(ARGV)
+  params
+end
+
 def find_files
-  Dir.glob('*')
+  params = parse_options
+  flags = params[:a] ? File::FNM_DOTMATCH : 0
+  Dir.glob('*', flags)
 end
 
 def string_max_size
   find_files.map(&:size).max + 2
 end
 
-def display_files_list(col)
+def display_files_list(max_colums)
   number_of_files = find_files.size
-  number_of_columns = number_of_files.ceildiv(col)
+  number_of_columns = number_of_files.ceildiv(max_colums)
   column_conditioning_array = find_files.each_slice(number_of_columns).to_a
   adjustment_array =
     column_conditioning_array.each do |item|
