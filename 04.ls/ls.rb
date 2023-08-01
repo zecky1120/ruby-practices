@@ -6,6 +6,7 @@ def parse_options
   params = {}
   opt = OptionParser.new
   opt.on('-a') { |a| params[:a] = a }
+  opt.on('-r') { |r| params[:r] = r }
   opt.parse(ARGV)
   params
 end
@@ -13,7 +14,8 @@ end
 def find_files
   params = parse_options
   flags = params[:a] ? File::FNM_DOTMATCH : 0
-  Dir.glob('*', flags)
+  dir = Dir.glob('*', flags)
+  params[:r] ? dir.reverse : dir
 end
 
 def string_max_size
