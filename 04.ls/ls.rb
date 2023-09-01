@@ -17,32 +17,35 @@ def find_files
   params[:l] = Dir.glob('*')
 end
 
-def get_file_ftype_hash(get_file)
-  {
-    'fifo' => 'p',
-    'characterSpecial' => 'c',
-    'directory' => 'd',
-    'blockSpecial' => 'b',
-    'file' => '-',
-    'link' => 'l',
-    'socket' => 's'
-  }[get_file]
+GET_FILE_FTYPE_HASH = {
+  'fifo' => 'p',
+  'characterSpecial' => 'c',
+  'directory' => 'd',
+  'blockSpecial' => 'b',
+  'file' => '-',
+  'link' => 'l',
+  'socket' => 's'
+}.freeze
+
+def get_file_ftype(get_file)
+  GET_FILE_FTYPE_HASH[get_file]
 end
+
+FILE_PERMISSION_HASH = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}.freeze
 
 def get_file_permission(file_octal)
   file_permission_ary = []
   file_octal.slice(-3, 3).each_char do |file_permission_number|
-    file_permission_hash = {
-      '0' => '---',
-      '1' => '--x',
-      '2' => '-w-',
-      '3' => '-wx',
-      '4' => 'r--',
-      '5' => 'r-x',
-      '6' => 'rw-',
-      '7' => 'rwx'
-    }[file_permission_number]
-    file_permission_ary << file_permission_hash
+    file_permission_ary << FILE_PERMISSION_HASH[file_permission_number]
   end
   get_special_authority(file_octal, file_permission_ary)
   file_permission_ary.join
@@ -74,7 +77,7 @@ end
 def get_file_mode(file)
   file_octal = File.stat(file).mode.to_s(8).rjust(6, '0')
   file_ftype = File.stat(file).ftype
-  file_type = get_file_ftype_hash(file_ftype)
+  file_type = get_file_ftype(file_ftype)
   file_permission = get_file_permission(file_octal)
   "#{file_type}#{file_permission}"
 end
