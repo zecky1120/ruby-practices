@@ -13,8 +13,27 @@ def parse_options
 end
 
 def find_files
-  params = parse_options
-  params[:l] = Dir.glob('*')
+  Dir.glob('*')
+end
+
+def string_max_size
+  find_files.map(&:size).max + 2
+end
+
+def display_files_list(columns)
+  number_of_files = find_files.size
+  number_of_columns = number_of_files.ceildiv(columns)
+  column_conditioning_ary = find_files.each_slice(number_of_columns).to_a
+  adjustment_ary =
+    column_conditioning_ary.each do |item|
+      item << nil while item.size < number_of_columns
+    end
+  adjustment_ary.transpose.each do |file_names|
+    file_names.each do |file_name|
+      print file_name.to_s.ljust(string_max_size)
+    end
+    puts
+  end
 end
 
 GET_FILE_FTYPE_HASH = {
@@ -165,4 +184,15 @@ def display_long_formats(find_files)
     print "\n"
   end
 end
-display_long_formats(find_files)
+
+def output
+  columns = 3
+  params = parse_options
+  if params[:l]
+    display_long_formats(find_files)
+  else
+    display_files_list(columns)
+  end
+end
+
+output
