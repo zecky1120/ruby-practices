@@ -1,4 +1,3 @@
-#!/home/zecky1120/.rbenv/shims/ruby
 # frozen_string_literal: true
 
 require 'optparse'
