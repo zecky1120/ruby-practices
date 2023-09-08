@@ -3,16 +3,30 @@
 require 'optparse'
 require 'etc'
 
+def output(columns: 3)
+  params = parse_options
+  if params[:l]
+    display_long_formats(find_files)
+  else
+    display_files_list(columns)
+  end
+end
+
 def parse_options
   params = {}
   opt = OptionParser.new
+  opt.on('-a') { |a| params[:a] = a }
+  opt.on('-r') { |r| params[:r] = r }
   opt.on('-l') { |l| params[:l] = l }
   opt.parse(ARGV)
   params
 end
 
 def find_files
-  Dir.glob('*')
+  params = parse_options
+  flags = params[:a] ? File::FNM_DOTMATCH : 0
+  dir = Dir.glob('*', flags)
+  params[:r] ? dir.reverse : dir
 end
 
 def string_max_size
@@ -181,16 +195,6 @@ def display_long_formats(find_files)
     print long_format[:file_mtime]
     print long_format[:file_name]
     print "\n"
-  end
-end
-
-def output
-  columns = 3
-  params = parse_options
-  if params[:l]
-    display_long_formats(find_files)
-  else
-    display_files_list(columns)
   end
 end
 
