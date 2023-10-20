@@ -25,7 +25,7 @@ def get_count_word(str)
 end
 
 def get_file_size(str)
-  str.sum(&:bytesize)
+  str.bytesize
 end
 
 def get_file_path(str)
