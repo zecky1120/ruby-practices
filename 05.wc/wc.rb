@@ -4,7 +4,10 @@ require 'optparse'
 
 def main(options)
   options = { l: true, w: true, c: true } if options.empty?
-  files.empty? ? display_wc_stdin(options) : display_wc(options)
+  paths = ARGV
+  wc_count_files = build_wc_counts(paths:)
+  wc_count_files.map { |wc_count_file| display_wc(count_file: wc_count_file, options:, paths:) }
+  display_total_count(wc_count_files:, options:, paths:) if paths.size >= 2
 end
 
 def options
@@ -17,91 +20,75 @@ def options
   options
 end
 
-def files
-  ARGV
-end
-
-def get_count_line(lines)
-  files.empty? ? lines.length : lines.count("\n")
-end
-
-def get_count_word(lines)
-  files.empty? ? lines.sum { |line| line.split.size } : lines.split(/\s+/).count
-end
-
-def get_file_size(lines)
-  files.empty? ? lines.join.bytesize : lines.bytesize
-end
-
-def width_size
-  line_count_ary = []
-  word_count_ary = []
-  file_size_ary = []
-  build_count_files = build_count(files)
-  build_count_files.each do |build_count_file|
-    line_count_ary << build_count_file[:count_lines]
-    word_count_ary << build_count_file[:count_words]
-    file_size_ary  << build_count_file[:count_file_sizes]
-  end
-  {
-    max_line: line_count_ary.max.to_s.size + 2,
-    max_word: word_count_ary.max.to_s.size + 3,
-    max_file_size: file_size_ary.max.to_s.size + 1
-  }
-end
-
-def build_wc_format(lines, file = '')
-  {
-    count_lines: get_count_line(lines),
-    count_words: get_count_word(lines),
-    count_file_sizes: get_file_size(lines),
-    path: file
-  }
-end
-
-def build_count(files)
-  files.map do |file|
-    lines = File.read(file)
-    build_wc_format(lines, file)
+def build_wc_counts(paths:)
+  if paths.empty?
+    [build_wc(lines: $stdin.read)]
+  else
+    paths.map do |path|
+      build_wc(lines: File.read(path), path:)
+    end
   end
 end
 
-def display_wc_format(build_count_file, options)
-  wc_format_ary = []
-  wc_format_ary << build_count_file[:count_lines].to_s.rjust(width_size[:max_line]) if options[:l]
-  wc_format_ary << build_count_file[:count_words].to_s.rjust(width_size[:max_word]) if options[:w]
-  wc_format_ary << build_count_file[:count_file_sizes].to_s.rjust(width_size[:max_file_size]) if options[:c]
-  wc_format_ary << " #{build_count_file[:path]}"
-  puts wc_format_ary.join
+def build_wc(lines:, path: '')
+  {
+    lines: lines.count("\n"),
+    words: lines.split(/\s+/).count,
+    file_sizes: lines.bytesize,
+    path:
+  }
 end
 
-def build_wc_total(build_count_files)
+def build_count_size(paths:, options:)
+  count_ary = []
+  string_sizes = build_wc_counts(paths:)
+  string_sizes.each do |string_size|
+    count_ary << string_size[:lines] if options[:l]
+    count_ary << string_size[:words] if options[:w]
+    count_ary << string_size[:file_sizes] if options[:c]
+  end
+  count_ary
+end
+
+def build_align_width(paths:, options:)
+  string_size_counts = build_count_size(paths:, options:)
+  fixed_max_width =
+    if paths.size <= 1 && options.size <= 1
+      0
+    elsif paths.empty? && options.size >= 2
+      7
+    else
+      string_size_counts.max.to_s.size
+    end
   {
-    count_lines: build_count_files.sum { |build_count_file| build_count_file[:count_lines] },
-    count_words: build_count_files.sum { |build_count_file| build_count_file[:count_words] },
-    count_file_sizes: build_count_files.sum { |build_count_file| build_count_file[:count_file_sizes] },
+    max_line: fixed_max_width,
+    max_word: fixed_max_width + 1,
+    max_file_size: fixed_max_width + 1
+  }
+end
+
+def display_wc(count_file:, options:, paths:)
+  string_size_count = build_align_width(paths:, options:)
+  count_files_ary = []
+  count_files_ary << count_file[:lines].to_s.rjust(string_size_count[:max_line]) if options[:l]
+  count_files_ary << count_file[:words].to_s.rjust(string_size_count[:max_word]) if options[:w]
+  count_files_ary << count_file[:file_sizes].to_s.rjust(string_size_count[:max_file_size]) if options[:c]
+  count_files_ary << " #{count_file[:path]}"
+  puts count_files_ary.join
+end
+
+def build_wc_total_counts(wc_count_files)
+  {
+    lines: wc_count_files.sum { |count_file| count_file[:lines] },
+    words: wc_count_files.sum { |count_file| count_file[:words] },
+    file_sizes: wc_count_files.sum { |count_file| count_file[:file_sizes] },
     path: 'total'
   }
 end
 
-def display_wc(options)
-  build_count_files = build_count(files)
-  build_count_files.map { |build_count_file| display_wc_format(build_count_file, options) }
-  display_wc_total(build_count_files, options) if files.size >= 2
-end
-
-def display_wc_total(build_count_files, options)
-  build_count_file = build_wc_total(build_count_files)
-  display_wc_format(build_count_file, options)
-end
-
-def display_wc_stdin(options)
-  wc_stdin_ary = []
-  rlines = $stdin.readlines
-  wc_stdin_ary << get_count_line(rlines).to_s.rjust(7) if options[:l]
-  wc_stdin_ary << get_count_word(rlines).to_s.rjust(8) if options[:w]
-  wc_stdin_ary << get_file_size(rlines).to_s.rjust(8) if options[:c]
-  puts wc_stdin_ary.join
+def display_total_count(wc_count_files:, options:, paths:)
+  total_count_file = build_wc_total_counts(wc_count_files)
+  display_wc(count_file: total_count_file, options:, paths:)
 end
 
 main(options)
