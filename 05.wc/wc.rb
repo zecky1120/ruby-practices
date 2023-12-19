@@ -42,7 +42,7 @@ def build_wc(files:, path: '')
   }
 end
 
-def build_count_size(paths, options)
+def build_count_size(options)
   count_ary = []
   wc_count_files.each do |wc_count_file|
     count_ary << wc_count_file[:lines] if options[:l]
@@ -53,8 +53,11 @@ def build_count_size(paths, options)
 end
 
 def build_align_width(paths)
-  string_size_counts = build_wc_counts(paths)[0].fetch(:file_sizes).to_s.size
-  paths.empty? ? 7 : string_size_counts
+  extract_file_sizes = build_wc_counts(paths).map do |count|
+    count[:file_sizes]
+  end
+  string_max_size_count = extract_file_sizes.max.to_s.size
+  paths.empty? ? 7 : string_max_size_count
 end
 
 def display_wc(count_file, options, paths)
