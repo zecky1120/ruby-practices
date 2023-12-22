@@ -58,7 +58,7 @@ def display_wc(count_file, options, paths)
   count_files << count_file[:lines].to_s.rjust(width) if options[:l]
   count_files << count_file[:words].to_s.rjust(width) if options[:w]
   count_files << count_file[:file_sizes].to_s.rjust(width) if options[:c]
-  count_files << count_file[:path].to_s
+  count_files << count_file[:path]
   puts count_files.join(' ')
 end
 
