@@ -53,11 +53,11 @@ def build_align_width(paths, options)
 end
 
 def display_wc(count_file, options, paths)
-  align_width = build_align_width(paths, options)
+  width = build_align_width(paths, options)
   count_files = []
-  count_files << count_file[:lines].to_s.rjust(align_width) if options[:l]
-  count_files << count_file[:words].to_s.rjust(align_width) if options[:w]
-  count_files << count_file[:file_sizes].to_s.rjust(align_width) if options[:c]
+  count_files << count_file[:lines].to_s.rjust(width) if options[:l]
+  count_files << count_file[:words].to_s.rjust(width) if options[:w]
+  count_files << count_file[:file_sizes].to_s.rjust(width) if options[:c]
   count_files << count_file[:path].to_s
   puts count_files.join(' ')
 end
