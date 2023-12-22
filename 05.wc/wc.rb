@@ -42,14 +42,13 @@ def build_wc(files:, path: '')
 end
 
 def build_align_width(paths, options)
-  filtered_count_data = build_wc_counts(paths).max_by { |v| v[:file_sizes] }
-  max_width = filtered_count_data[:file_sizes].to_s.size
   if paths.empty?
     7
   elsif paths.size <= 1 && options.size <= 1
     0
   else
-    max_width
+    filtered_count_data = build_wc_counts(paths).max_by { |v| v[:file_sizes] }
+    filtered_count_data[:file_sizes].to_s.size
   end
 end
 
