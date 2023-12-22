@@ -19,8 +19,7 @@ def parse_options
   opt.on('-w') { options[:w] = true }
   opt.on('-c') { options[:c] = true }
   opt.permute!(ARGV)
-  options = { l: true, w: true, c: true } if options.empty?
-  options
+  options.empty? ? { l: true, w: true, c: true } : options
 end
 
 def build_wc_counts(paths)
