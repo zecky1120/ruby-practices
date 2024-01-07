@@ -6,10 +6,12 @@ def main
   options = parse_options
   paths = ARGV
   wc_counts = build_wc_counts(paths)
+  total_count_file = build_wc_total_counts(wc_counts)
+  width = max_space_size(wc_counts, total_count_file, options, paths)
   wc_counts.each do |wc_count|
-    display_wc(wc_count, options, paths)
+    output(wc_count, options, width)
   end
-  wc_total_count(wc_counts, options, paths) if paths.size >= 2
+  output(total_count_file, options, width) if paths.size >= 2
 end
 
 def parse_options
@@ -41,19 +43,7 @@ def build_wc(files:, path: '')
   }
 end
 
-def build_align_width(paths, options)
-  if paths.empty?
-    7
-  elsif paths.size <= 1 && options.size <= 1
-    0
-  else
-    filtered_count_data = build_wc_counts(paths).max_by { |v| v[:file_sizes] }
-    filtered_count_data[:file_sizes].to_s.size
-  end
-end
-
-def display_wc(count_file, options, paths)
-  width = build_align_width(paths, options)
+def output(count_file, options, width)
   count_files = []
   count_files << count_file[:lines].to_s.rjust(width) if options[:l]
   count_files << count_file[:words].to_s.rjust(width) if options[:w]
@@ -71,9 +61,20 @@ def build_wc_total_counts(wc_count_files)
   }
 end
 
-def wc_total_count(wc_count_files, options, paths)
-  total_count_file = build_wc_total_counts(wc_count_files)
-  display_wc(total_count_file, options, paths)
+def max_space_size(wc_counts, total_count_file, options, paths)
+  if paths.empty?
+    7
+  elsif paths.size <= 1 && options.size <= 1
+    0
+  else
+    ary = []
+    filtered_count_data = wc_counts.max_by { |v| v[:file_sizes] }
+    total_count_data = total_count_file[:file_sizes]
+    ary << filtered_count_data[:file_sizes]
+    ary << total_count_data
+    calculate_size = ary.max_by { |v| v }
+    calculate_size.to_s.size
+  end
 end
 
 main
