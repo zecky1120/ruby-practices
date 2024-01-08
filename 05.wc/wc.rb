@@ -64,8 +64,9 @@ end
 def max_space_size(wc_counts, total_count_file, options, paths)
   if paths.empty?
     7
-  elsif paths.size <= 1 && options.size <= 1
-    0
+  elsif paths.size == 1 && options.size == 1
+    key = options.key(true)
+    wc_counts[0][key].to_s.size
   else
     ary = []
     filtered_count_data = wc_counts.max_by { |v| v[:file_sizes] }
