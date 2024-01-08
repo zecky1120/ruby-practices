@@ -68,13 +68,7 @@ def max_space_size(wc_counts, total_count_file, options, paths)
     key = options.key(true)
     wc_counts[0][key].to_s.size
   else
-    ary = []
-    filtered_count_data = wc_counts.max_by { |v| v[:file_sizes] }
-    total_count_data = total_count_file[:file_sizes]
-    ary << filtered_count_data[:file_sizes]
-    ary << total_count_data
-    calculate_size = ary.max_by { |v| v }
-    calculate_size.to_s.size
+    total_count_data = total_count_file[:bytes].to_s.size
   end
 end
 
