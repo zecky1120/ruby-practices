@@ -38,7 +38,7 @@ def build_wc(files:, path: '')
   {
     lines: files.count("\n"),
     words: files.split(/\s+/).count,
-    file_sizes: files.bytesize,
+    bytes: files.bytesize,
     path:
   }
 end
@@ -47,7 +47,7 @@ def output(count_file, options, width)
   count_files = []
   count_files << count_file[:lines].to_s.rjust(width) if options[:l]
   count_files << count_file[:words].to_s.rjust(width) if options[:w]
-  count_files << count_file[:file_sizes].to_s.rjust(width) if options[:c]
+  count_files << count_file[:bytes].to_s.rjust(width) if options[:c]
   count_files << count_file[:path]
   puts count_files.join(' ')
 end
