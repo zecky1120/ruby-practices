@@ -53,12 +53,10 @@ def output(count_file, options, width)
 end
 
 def build_wc_total_counts(wc_count_files)
-  {
-    lines: wc_count_files.sum { |count_file| count_file[:lines] },
-    words: wc_count_files.sum { |count_file| count_file[:words] },
-    file_sizes: wc_count_files.sum { |count_file| count_file[:file_sizes] },
-    path: 'total'
-  }
+  counts = %i[lines words bytes].to_h do |key|
+    [key, wc_count_files.sum { |h| h[key] }]
+  end
+  counts.merge(path: 'total')
 end
 
 def max_space_size(wc_counts, total_count_file, options, paths)
