@@ -19,7 +19,6 @@ class Game
       frame = Frame.new(@frames[n])
       total += frame.scores
       total += add_bonus(frame, n)
-      add_bonus(frame, n)
     end
     total + @frames.last.sum
   end
@@ -42,21 +41,20 @@ class Game
     frames
   end
 
-  def add_bonus(frame, n)
+  def add_bonus(frame, idx)
     bonus = 0
-    frame_size = frames[n.succ].size >= 2
-    next_shot = frames[n.succ].first(2).sum
-    next_frame = frame_size ? next_shot : next_shot + frames[n.succ + 1][0]
+    frame_size = frames[idx.succ].size >= 2
+    next_shot = frames[idx.succ].first(2).sum
+    next_frame = frame_size ? next_shot : next_shot + frames[idx.succ + 1][0]
     if frame.strike?
       bonus += next_frame
     elsif frame.spare?
-      bonus += frames[n + 1][0]
+      bonus += frames[idx + 1][0]
     else
       0
     end
     bonus
   end
-
 end
 
 game = Game.new(ARGV[0])
