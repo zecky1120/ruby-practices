@@ -8,60 +8,56 @@ class Game
     @shot = shot
   end
 
-  def shots
+  def shot_scores
     @shot.split(',')
   end
 
-  def build_frames
-    numbers = shots.map { |s| Shot.new(s).score }
+  def main
+    @frames = frames
+    total = 0
+    (0..8).each do |i|
+      frame = Frame.new(@frames[i])
+      total += frame.scores
+      total += add_bonus(frame, i)
+      add_bonus(frame, i)
+    end
+    total + @frames.last.sum
+  end
+
+  def frames
+    shots = shot_scores.map { |shot| Shot.new(shot).score }
     frame = []
     frames = []
-    numbers.each do |n|
-      frame << n
+    shots.each do |s|
+      frame << s
       if frames.length < 10
-        if frame.length >= 2 || n == 10
+        if frame.length >= 2 || s == 10
           frames << frame.dup
           frame.clear
         end
       else
-        frames.last << n
+        frames.last << s
       end
     end
     frames
   end
 
-
-  def score
-    total = 0
-    build_frames.take(10).each do |build_frame|
-      @first_shot = build_frame[0]
-      @second_shot = build_frame[1]
-      @third_shot = build_frame[2]
-      frame = Frame.new(@first_shot, @second_shot, @third_shot)
-      total += frame.scores
-    end
-    total + add_bonus
-  end
-
-  def add_bonus
+  def add_bonus(frame, i)
     bonus = 0
-    build_frames.take(9).each_with_index do |f, i|
-      rolls = build_frames[i.succ].size >= 2
-      next_shot = build_frames[i.succ].first(2).sum
-      next_frame = rolls ? next_shot : build_frames[i.succ].sum + build_frames[i.succ + 1][0]
-      strike = f[0] == 10
-      spare = f.sum == 10
-      if strike
-        bonus += next_frame
-      elsif spare
-        bonus += build_frames[i + 1][0]
-      else
-        0
-      end
+    frame_size = frames[i.succ].size >= 2
+    next_shot = frames[i.succ].first(2).sum
+    next_frame = frame_size ? next_shot : next_shot + frames[i.succ + 1][0]
+    if frame.strike?
+      bonus += next_frame
+    elsif frame.spare?
+      bonus += frames[i + 1][0]
+    else
+      0
     end
     bonus
   end
+
 end
 
 game = Game.new(ARGV[0])
-puts game.score
+puts game.main

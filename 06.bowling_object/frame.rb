@@ -3,10 +3,10 @@
 require './shot'
 
 class Frame
-  def initialize(first_shot, second_shot = 0, third_shot = 0)
-    @first_shot = Shot.new(first_shot).score
-    @second_shot = Shot.new(second_shot).score
-    @third_shot = Shot.new(third_shot).score
+  def initialize(frame)
+    @first_shot = Shot.new(frame[0]).score
+    @second_shot = Shot.new(frame[1]).score
+    @third_shot = Shot.new(frame[2]).score
   end
 
   def scores
