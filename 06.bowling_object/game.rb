@@ -13,7 +13,7 @@ class Game
   end
 
   def main
-    @frames = frames
+    @frames = build_frames
     total = 0
     (0..8).each do |n|
       frame = Frame.new(@frames[n])
@@ -23,7 +23,7 @@ class Game
     total + @frames.last.sum
   end
 
-  def frames
+  def build_frames
     scores = shots.map { |shot| Shot.new(shot).score }
     frame = []
     frames = []
@@ -31,8 +31,8 @@ class Game
       frame << score
       if frames.length < 10
         if frame.length >= 2 || score == 10
-          frames << frame.dup
-          frame.clear
+          frames << frame
+          frame = []
         end
       else
         frames.last << score
@@ -43,13 +43,13 @@ class Game
 
   def add_bonus(frame, idx)
     bonus = 0
-    frame_size = frames[idx.succ].size >= 2
-    next_shot = frames[idx.succ].first(2).sum
-    next_frame = frame_size ? next_shot : next_shot + frames[idx.succ + 1][0]
+    frame_size = build_frames[idx.succ].size >= 2
+    next_frame = build_frames[idx.succ].first(2).sum
+    next_frame_total = frame_size ? next_frame : next_frame + build_frames[idx.succ + 1][0]
     if frame.strike?
-      bonus += next_frame
+      bonus += next_frame_total
     elsif frame.spare?
-      bonus += frames[idx + 1][0]
+      bonus += build_frames[idx + 1][0]
     else
       0
     end
