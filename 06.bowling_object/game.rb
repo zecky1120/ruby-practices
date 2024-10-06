@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require './frame'
-require 'benchmark'
+
 class Game
   def initialize(mark)
     @mark = mark
@@ -9,58 +9,54 @@ class Game
 
   def main
     total_score = 0
-    pinfalls = parse_pinfall_text
+    pinfalls = parse_frames
     pinfalls.each_with_index do |pinfall, idx|
       frame = Frame.new(pinfall)
       total_score += frame.scores
-      total_score += add_bonus(pinfall, idx, frame)
+      total_score += calculate_bonus(pinfalls, idx, frame)
     end
     total_score
   end
 
-  # private
+  private
 
-  def pinfall_texts
-    pins = @mark.split(',')
-    frame = []
-    game_frames = []
-    pins.each do |pin|
-      frame << pin
-      if game_frames.size < 10
-        if frame.size >= 2 || pin == 'X'
-          game_frames << frame
-          frame = []
+  def generate_frames
+    input_values = @mark.split(',')
+    current_frame = []
+    bowling_frames = []
+    input_values.each do |input_value|
+      current_frame << input_value
+      if bowling_frames.length < 10
+        if current_frame.length >= 2 || input_value == 'X'
+          bowling_frames << current_frame
+          current_frame = []
         end
       else
-        game_frames.last << pin
+        bowling_frames.last << input_value
       end
     end
-    game_frames
+    bowling_frames
   end
 
-  def parse_pinfall_text
-    pinfall_texts.map { |pin| Frame.new(pin).shots }
+  def parse_frames
+    generate_frames.map { |generate_frame| Frame.new(generate_frame).shots }
   end
 
-  def add_bonus(pinfall, idx, frame)
-    bonus_point = 0
-    next_pinfall = parse_pinfall_text[idx + 1] ||= []
+  def calculate_bonus(pinfalls, idx, frame)
+    return 0 if idx >= 9
+
+    next_frame = pinfalls[idx + 1] || []
+    second_frame = pinfalls[idx + 2] || []
     if frame.strike?
-      bonus_point += next_pinfall.first(2).sum
+      bonus_shots = next_frame + second_frame
+      bonus_shots.first(2).sum
     elsif frame.spare?
-      bonus_point += next_pinfall[0] || 0
+      next_frame[0] || 0
+    else
+      0
     end
-    bonus_point
   end
 end
 
 game = Game.new(ARGV[0])
-# p game.pinfall_texts
-# puts game.main
-p "-----------------------"
-time = Benchmark.measure do
-  game = Game.new(ARGV[0])
-  p game.parse_pinfall_text
-end
-
-puts "処理時間: #{time.real} 秒"
+puts game.main
