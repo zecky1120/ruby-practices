@@ -3,11 +3,10 @@
 require './shot'
 
 class Frame
+  attr_reader :shots
+
   def initialize(frame)
     @shots = frame.map { |f| Shot.new(f).score }
-    # @first_shot = Shot.new(frame[0]).score
-    # @second_shot = Shot.new(frame[1]).score
-    # @third_shot = Shot.new(frame[2]).score
   end
 
   def scores
@@ -22,6 +21,3 @@ class Frame
     @shots[0] + @shots[1] == 10
   end
 end
-
-frame = Frame.new([6, 3])
-p frame.strike?
