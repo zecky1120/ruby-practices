@@ -5,8 +5,8 @@ require './shot'
 class Frame
   attr_reader :shots
 
-  def initialize(frame)
-    @shots = frame.map { |f| Shot.new(f).score }
+  def initialize(strokes)
+    @shots = strokes.map { |stroke| Shot.new(stroke).score }
   end
 
   def scores
