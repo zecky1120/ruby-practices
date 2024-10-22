@@ -20,20 +20,20 @@ class Game
 
   def parse_pinfall_text
     input_values = ARGV[0].split(',')
-    roll = []
     rolls = []
+    pinfall_rolls = []
     input_values.each do |input_value|
-      roll << input_value
-      if rolls.length < 10
-        if roll.length >= 2 || input_value == Shot::STRIKE_MARK
-          rolls << roll
-          roll = []
+      rolls << input_value
+      if pinfall_rolls.length < 10
+        if rolls.length >= 2 || input_value == Shot::STRIKE_MARK
+          pinfall_rolls << rolls
+          rolls = []
         end
       else
-        rolls.last << input_value
+        pinfall_rolls.last << input_value
       end
     end
-    rolls.map { |r| Frame.new(r) }
+    pinfall_rolls.map { |r| Frame.new(r) }
   end
 
   def calculate_bonus(idx, frame)
