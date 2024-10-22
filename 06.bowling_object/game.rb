@@ -3,8 +3,7 @@
 require './frame'
 
 class Game
-  def initialize(value)
-    @value = value
+  def initialize
     @frames = parse_pinfall_text
   end
 
@@ -20,7 +19,7 @@ class Game
   private
 
   def parse_pinfall_text
-    input_values = @value.split(',')
+    input_values = ARGV[0].split(',')
     roll = []
     rolls = []
     input_values.each do |input_value|
@@ -53,5 +52,5 @@ class Game
   end
 end
 
-game = Game.new(ARGV[0])
+game = Game.new
 puts game.main
