@@ -10,4 +10,8 @@ class Shot
   def score
     @roll == STRIKE_MARK ? 10 : @roll.to_i
   end
+
+  def strike?
+    @roll == STRIKE_MARK
+  end
 end
