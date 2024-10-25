@@ -13,27 +13,27 @@ class Game
       total_score += frame.scores
       total_score += calculate_bonus(idx, frame)
     end
-    total_score
+    puts total_score
   end
 
   private
 
   def parse_pinfall_text
-    input_values = ARGV[0].split(',')
+    pinfall_results = ARGV[0].split(',').map { |v| Shot.new(v) }
     rolls = []
     pinfall_rolls = []
-    input_values.each do |input_value|
-      rolls << input_value
+    pinfall_results.each do |pinfall_result|
+      rolls << pinfall_result
       if pinfall_rolls.length < 10
-        if rolls.length >= 2 || input_value == Shot::STRIKE_MARK
+        if rolls.length >= 2 || pinfall_result.strike?
           pinfall_rolls << rolls
           rolls = []
         end
       else
-        pinfall_rolls.last << input_value
+        pinfall_rolls.last << pinfall_result
       end
     end
-    pinfall_rolls.map { |r| Frame.new(r) }
+    pinfall_rolls.map { |r| Frame.new(r.map(&:score)) }
   end
 
   def calculate_bonus(idx, frame)
@@ -42,10 +42,10 @@ class Game
     next_rolls = @frames[idx + 1]
     second_rolls = @frames[idx + 2]
     if frame.strike?
-      bonus_shots = (next_rolls ? next_rolls.shots : []) + (second_rolls ? second_rolls.shots : [])
-      bonus_shots.first(2).sum
+      bonus_shots = (next_rolls ? next_rolls.shot : []) + (second_rolls ? second_rolls.shot : [])
+      bonus_shots.first(2).sum(&:score)
     elsif frame.spare?
-      next_rolls ? next_rolls.shots[0] : 0
+      next_rolls ? next_rolls.shot[0].score : 0
     else
       0
     end
@@ -53,4 +53,4 @@ class Game
 end
 
 game = Game.new
-puts game.main
+game.main
