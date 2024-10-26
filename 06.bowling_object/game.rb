@@ -4,7 +4,7 @@ require './frame'
 
 class Game
   def initialize
-    @frames = pinfall_scores
+    @frames = parse_pinfall_text
   end
 
   def main
@@ -20,6 +20,11 @@ class Game
 
   def parse_pinfall_text
     pinfall_results = ARGV[0].split(',').map { |roll| Shot.new(roll) }
+    pinfall_scores = parse_pinfall_rolls(pinfall_results)
+    pinfall_scores.map { |pin| Frame.new(pin.map(&:score)) }
+  end
+
+  def parse_pinfall_rolls(pinfall_results)
     rolls = []
     pinfall_rolls = []
     pinfall_results.each do |pinfall_result|
@@ -34,10 +39,6 @@ class Game
       end
     end
     pinfall_rolls
-  end
-
-  def pinfall_scores
-    parse_pinfall_text.map { |r| Frame.new(r.map(&:score)) }
   end
 
   def calculate_bonus(idx, frame)
