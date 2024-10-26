@@ -4,7 +4,7 @@ require './frame'
 
 class Game
   def initialize
-    @frames = parse_pinfall_text
+    @frames = pinfall_scores
   end
 
   def main
@@ -19,7 +19,7 @@ class Game
   private
 
   def parse_pinfall_text
-    pinfall_results = ARGV[0].split(',').map { |v| Shot.new(v) }
+    pinfall_results = ARGV[0].split(',').map { |roll| Shot.new(roll) }
     rolls = []
     pinfall_rolls = []
     pinfall_results.each do |pinfall_result|
@@ -33,7 +33,11 @@ class Game
         pinfall_rolls.last << pinfall_result
       end
     end
-    pinfall_rolls.map { |r| Frame.new(r.map(&:score)) }
+    pinfall_rolls
+  end
+
+  def pinfall_scores
+    parse_pinfall_text.map { |r| Frame.new(r.map(&:score)) }
   end
 
   def calculate_bonus(idx, frame)
@@ -42,13 +46,21 @@ class Game
     next_rolls = @frames[idx + 1]
     second_rolls = @frames[idx + 2]
     if frame.strike?
-      bonus_shots = (next_rolls ? next_rolls.shot : []) + (second_rolls ? second_rolls.shot : [])
-      bonus_shots.first(2).sum(&:score)
+      calculate_strike_point(next_rolls, second_rolls)
     elsif frame.spare?
-      next_rolls ? next_rolls.shot[0].score : 0
+      calculate_spare_point(next_rolls)
     else
       0
     end
+  end
+
+  def calculate_strike_point(next_rolls, second_rolls)
+    bonus_shots = (next_rolls ? next_rolls.shot : []) + (second_rolls ? second_rolls.shot : [])
+    bonus_shots.first(2).sum(&:score)
+  end
+
+  def calculate_spare_point(next_rolls)
+    next_rolls ? next_rolls.shot[0].score : 0
   end
 end
 
