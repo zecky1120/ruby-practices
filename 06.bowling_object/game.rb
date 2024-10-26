@@ -4,7 +4,7 @@ require './frame'
 
 class Game
   def initialize
-    @frames = parse_pinfall_text
+    @frames = bowling_scoring
   end
 
   def main
@@ -18,13 +18,12 @@ class Game
 
   private
 
-  def parse_pinfall_text
-    pinfall_results = ARGV[0].split(',').map { |roll| Shot.new(roll) }
-    pinfall_scores = parse_pinfall_rolls(pinfall_results)
-    pinfall_scores.map { |pin| Frame.new(pin.map(&:score)) }
+  def bowling_scoring
+    parse_pinfall_text.map { |roll| Frame.new(roll.map(&:score)) }
   end
 
-  def parse_pinfall_rolls(pinfall_results)
+  def parse_pinfall_text
+    pinfall_results = ARGV[0].split(',').map { |roll| Shot.new(roll) }
     rolls = []
     pinfall_rolls = []
     pinfall_results.each do |pinfall_result|
