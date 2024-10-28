@@ -4,7 +4,7 @@ require './frame'
 
 class Game
   def initialize(pinfall_text)
-    @frames = bowling_scoring(pinfall_text)
+    @frames = generate_pinfall_frame(pinfall_text)
   end
 
   def main
@@ -18,8 +18,9 @@ class Game
 
   private
 
-  def bowling_scoring(pinfall_text)
-    parse_pinfall_text(pinfall_text).map { |shots| Frame.new(shots.map(&:score)) }
+  def generate_pinfall_frame(pinfall_text)
+    pinfall_frames = parse_pinfall_text(pinfall_text)
+    pinfall_frames.map { |shots| Frame.new(shots) }
   end
 
   def parse_pinfall_text(pinfall_text)
@@ -43,24 +44,24 @@ class Game
   def calculate_bonus(idx, frame)
     return 0 if idx >= 9
 
-    next_rolls = @frames[idx + 1]
-    second_rolls = @frames[idx + 2]
+    next_frame = @frames[idx + 1]
+    second_frame = @frames[idx + 2]
     if frame.strike?
-      calculate_strike_point(next_rolls, second_rolls)
+      calculate_strike_point(next_frame, second_frame)
     elsif frame.spare?
-      calculate_spare_point(next_rolls)
+      calculate_spare_point(next_frame)
     else
       0
     end
   end
 
-  def calculate_strike_point(next_rolls, second_rolls)
-    bonus_shots = (next_rolls ? next_rolls.shot : []) + (second_rolls ? second_rolls.shot : [])
+  def calculate_strike_point(next_frame, second_frame)
+    bonus_shots = (next_frame ? next_frame.shot : []) + (second_frame ? second_frame.shot : [])
     bonus_shots.first(2).sum(&:score)
   end
 
-  def calculate_spare_point(next_rolls)
-    next_rolls ? next_rolls.shot[0].score : 0
+  def calculate_spare_point(next_frame)
+    next_frame ? next_frame.shot[0].score : 0
   end
 end
 
