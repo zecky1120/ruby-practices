@@ -4,7 +4,7 @@ require './frame'
 
 class Game
   def initialize(pinfall_text)
-    @frames = generate_pinfall_frame(pinfall_text)
+    @frames = generate_pinfall_frames(pinfall_text)
   end
 
   def main
@@ -14,7 +14,7 @@ class Game
 
   private
 
-  def generate_pinfall_frame(pinfall_text)
+  def generate_pinfall_frames(pinfall_text)
     pinfall_frames = parse_pinfall_text(pinfall_text)
     pinfall_frames.map { |shots| Frame.new(shots) }
   end
