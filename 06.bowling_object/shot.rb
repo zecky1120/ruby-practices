@@ -3,15 +3,15 @@
 class Shot
   STRIKE_MARK = 'X'
 
-  def initialize(roll)
-    @roll = roll
+  def initialize(shot)
+    @shot = shot
   end
 
   def score
-    @roll == STRIKE_MARK ? 10 : @roll.to_i
+    @shot == STRIKE_MARK ? 10 : @shot.to_i
   end
 
   def strike?
-    @roll == STRIKE_MARK
+    @shot == STRIKE_MARK
   end
 end

@@ -24,7 +24,7 @@ class Game
   end
 
   def parse_pinfall_text(pinfall_text)
-    shots = pinfall_text.split(',').map { |roll| Shot.new(roll) }
+    shots = pinfall_text.split(',').map { |shot| Shot.new(shot) }
     rolls = []
     pinfall_rolls = []
     shots.each do |shot|
@@ -56,12 +56,12 @@ class Game
   end
 
   def calculate_strike_point(next_frame, second_frame)
-    bonus_shots = (next_frame ? next_frame.shot : []) + (second_frame ? second_frame.shot : [])
+    bonus_shots = (next_frame ? next_frame.shots : []) + (second_frame ? second_frame.shots : [])
     bonus_shots.first(2).sum(&:score)
   end
 
   def calculate_spare_point(next_frame)
-    next_frame ? next_frame.shot[0].score : 0
+    next_frame ? next_frame.shots[0].score : 0
   end
 end
 
