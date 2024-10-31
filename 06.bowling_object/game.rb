@@ -15,8 +15,7 @@ class Game
   private
 
   def generate_pinfall_frames(pinfall_text)
-    pinfall_frames = parse_pinfall_text(pinfall_text)
-    pinfall_frames.map { |shots| Frame.new(shots) }
+    parse_pinfall_text(pinfall_text).map { |shots| Frame.new(shots) }
   end
 
   def parse_pinfall_text(pinfall_text)
