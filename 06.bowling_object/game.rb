@@ -8,7 +8,7 @@ class Game
   end
 
   def main
-    total_score = @frames.each_with_index.sum { |frame, idx| frame.scores + calculate_bonus(idx, frame) }
+    total_score = @frames.sum { |frame| frame.scores(@frames) }
     puts total_score
   end
 
@@ -61,4 +61,5 @@ class Game
 end
 
 game = Game.new(ARGV[0])
+
 game.main
