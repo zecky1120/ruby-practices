@@ -61,5 +61,4 @@ class Game
 end
 
 game = Game.new(ARGV[0])
-
 game.main
