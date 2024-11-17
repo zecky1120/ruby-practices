@@ -43,7 +43,7 @@ class Frame
   end
 
   def calculate_strike_bonus(next_frame, next_after_next_frame)
-    bonus_shots = (next_frame ? next_frame.shots : []) + (next_after_next_frame ? next_after_next_frame.shots : [])
+    bonus_shots = (next_frame&.shots || []) + (next_after_next_frame&.shots || [])
     bonus_shots.first(2).sum(&:score)
   end
 
