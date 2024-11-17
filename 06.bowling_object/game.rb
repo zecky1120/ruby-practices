@@ -31,29 +31,6 @@ class Game
     end
     pinfall_rolls
   end
-
-  def calculate_bonus(idx, frame)
-    return 0 if idx >= 9
-
-    next_frame = @frames[idx + 1]
-    second_frame = @frames[idx + 2]
-    if frame.strike?
-      calculate_strike_point(next_frame, second_frame)
-    elsif frame.spare?
-      calculate_spare_point(next_frame)
-    else
-      0
-    end
-  end
-
-  def calculate_strike_point(next_frame, second_frame)
-    bonus_shots = (next_frame ? next_frame.shots : []) + (second_frame ? second_frame.shots : [])
-    bonus_shots.first(2).sum(&:score)
-  end
-
-  def calculate_spare_point(next_frame)
-    next_frame ? next_frame.shots[0].score : 0
-  end
 end
 
 game = Game.new(ARGV[0])
