@@ -32,22 +32,22 @@ class Frame
     return 0 if idx >= 9
 
     next_frame = frames[idx + 1]
-    second_frame = frames[idx + 2]
+    next_after_next_frame = frames[idx + 2]
     if strike?
-      calculate_strike_point(next_frame, second_frame)
+      calculate_strike_bonus(next_frame, next_after_next_frame)
     elsif spare?
-      calculate_spare_point(next_frame)
+      calculate_spare_bonus(next_frame)
     else
       0
     end
   end
 
-  def calculate_strike_point(next_frame, second_frame)
-    bonus_shots = (next_frame ? next_frame.shots : []) + (second_frame ? second_frame.shots : [])
+  def calculate_strike_bonus(next_frame, next_after_next_frame)
+    bonus_shots = (next_frame ? next_frame.shots : []) + (next_after_next_frame ? next_after_next_frame.shots : [])
     bonus_shots.first(2).sum(&:score)
   end
 
-  def calculate_spare_point(next_frame)
+  def calculate_spare_bonus(next_frame)
     next_frame ? next_frame.shots[0].score : 0
   end
 end
