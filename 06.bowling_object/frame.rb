@@ -3,20 +3,20 @@
 require './shot'
 
 class Frame
-  attr_reader :shots
+  attr_reader :shots, :idx
 
-  def initialize(shots)
+  def initialize(shots, idx)
     @shots = shots
+    @idx = idx
   end
 
-  def scores(frames)
-    idx = frames.index(self)
-    score + calculate_bonus(idx, frames)
+  def calculate_frame(frames)
+    calculate_score + calculate_bonus(idx, frames)
   end
 
   private
 
-  def score
+  def calculate_score
     @shots.sum(&:score)
   end
 
@@ -32,9 +32,9 @@ class Frame
     return 0 if idx >= 9
 
     next_frame = frames[idx + 1]
-    next_after_next_frame = frames[idx + 2]
+    after_next_frame = frames[idx + 2]
     if strike?
-      calculate_strike_bonus(next_frame, next_after_next_frame)
+      calculate_strike_bonus(next_frame, after_next_frame)
     elsif spare?
       calculate_spare_bonus(next_frame)
     else
@@ -42,8 +42,8 @@ class Frame
     end
   end
 
-  def calculate_strike_bonus(next_frame, next_after_next_frame)
-    bonus_shots = (next_frame&.shots || []) + (next_after_next_frame&.shots || [])
+  def calculate_strike_bonus(next_frame, after_next_frame)
+    bonus_shots = (next_frame&.shots || []) + (after_next_frame&.shots || [])
     bonus_shots.first(2).sum(&:score)
   end
 
