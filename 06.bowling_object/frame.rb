@@ -25,7 +25,7 @@ class Frame
   end
 
   def spare?
-    @shots[0..1].sum(&:score) == 10 && !strike?
+    @shots.first(2).sum(&:score) == 10 && !strike?
   end
 
   def calculate_bonus(frames)
