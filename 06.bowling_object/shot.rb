@@ -8,7 +8,7 @@ class Shot
   end
 
   def score
-    @shot == STRIKE_MARK ? 10 : @shot.to_i
+    strike? ? 10 : @shot.to_i
   end
 
   def strike?
