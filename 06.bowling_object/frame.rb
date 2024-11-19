@@ -3,15 +3,15 @@
 require './shot'
 
 class Frame
-  attr_reader :shots, :idx
+  attr_reader :shots
 
-  def initialize(shots, idx)
+  def initialize(index, shots)
+    @index = index
     @shots = shots
-    @idx = idx
   end
 
   def calculate_frame(frames)
-    calculate_score + calculate_bonus(idx, frames)
+    calculate_score + calculate_bonus(frames)
   end
 
   private
@@ -28,11 +28,11 @@ class Frame
     @shots[0..1].sum(&:score) == 10 && !strike?
   end
 
-  def calculate_bonus(idx, frames)
-    return 0 if idx >= 9
+  def calculate_bonus(frames)
+    return 0 if @index >= 9
 
-    next_frame = frames[idx + 1]
-    after_next_frame = frames[idx + 2]
+    next_frame = frames[@index + 1]
+    after_next_frame = frames[@index + 2]
     if strike?
       calculate_strike_bonus(next_frame, after_next_frame)
     elsif spare?
