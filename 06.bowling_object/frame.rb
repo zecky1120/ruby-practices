@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require './shot'
-
 class Frame
   attr_reader :shots
 
@@ -10,13 +8,13 @@ class Frame
     @shots = shots
   end
 
-  def calculate_frame(frames)
-    calculate_score + calculate_bonus(frames)
+  def calculate_score(frames)
+    calculate_frame_score + calculate_bonus(frames)
   end
 
   private
 
-  def calculate_score
+  def calculate_frame_score
     @shots.sum(&:score)
   end
 

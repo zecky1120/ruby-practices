@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require './frame'
+require './shot'
 
 class Game
   def initialize(pinfall_text)
@@ -8,7 +9,7 @@ class Game
   end
 
   def main
-    total_score = @frames.sum { |frame| frame.calculate_frame(@frames) }
+    total_score = @frames.sum { |frame| frame.calculate_score(@frames) }
     puts total_score
   end
 
