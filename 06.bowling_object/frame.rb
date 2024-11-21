@@ -9,12 +9,12 @@ class Frame
   end
 
   def calculate_score(frames)
-    calculate_frame_score + calculate_bonus(frames)
+    score_without_bonus + calculate_bonus(frames)
   end
 
   private
 
-  def calculate_frame_score
+  def score_without_bonus
     @shots.sum(&:score)
   end
 
