@@ -5,7 +5,7 @@ require './shot'
 
 class Game
   def initialize(pinfall_text)
-    @frames = parse_pinfall_text(pinfall_text).each_with_index.map { |shots, index| Frame.new(index, shots) }
+    @frames = parse_pinfall_text(pinfall_text).map.with_index { |shots, index| Frame.new(index, shots) }
   end
 
   def main
@@ -18,8 +18,7 @@ class Game
   def parse_pinfall_text(pinfall_text)
     all_shots = pinfall_text.split(',').map { |shot| Shot.new(shot) }
     shots = []
-    shots_each_frame = []
-    all_shots.each do |shot|
+    all_shots.each_with_object([]) do |shot, shots_each_frame|
       shots << shot
       if shots_each_frame.length < 10
         if shots.length >= 2 || shot.strike?
@@ -29,8 +28,8 @@ class Game
       else
         shots_each_frame.last << shot
       end
+      shots_each_frame
     end
-    shots_each_frame
   end
 end
 
