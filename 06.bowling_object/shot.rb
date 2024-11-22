@@ -3,15 +3,15 @@
 class Shot
   STRIKE_MARK = 'X'
 
-  def initialize(shot)
-    @shot = shot
+  def initialize(pin)
+    @pin = pin
   end
 
   def score
-    strike? ? 10 : @shot.to_i
+    strike? ? 10 : @pin.to_i
   end
 
   def strike?
-    @shot == STRIKE_MARK
+    @pin == STRIKE_MARK
   end
 end
