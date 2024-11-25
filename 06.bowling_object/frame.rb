@@ -32,20 +32,11 @@ class Frame
     next_frame = frames[@index + 1]
     after_next_frame = frames[@index + 2]
     if strike?
-      calculate_strike_bonus(next_frame, after_next_frame)
+      (next_frame.shots + (after_next_frame&.shots || [])).first(2).sum(&:score)
     elsif spare?
-      calculate_spare_bonus(next_frame)
+      next_frame.shots[0].score
     else
       0
     end
-  end
-
-  def calculate_strike_bonus(next_frame, after_next_frame)
-    bonus_shots = (next_frame&.shots || []) + (after_next_frame&.shots || [])
-    bonus_shots.first(2).sum(&:score)
-  end
-
-  def calculate_spare_bonus(next_frame)
-    next_frame ? next_frame.shots[0].score : 0
   end
 end
