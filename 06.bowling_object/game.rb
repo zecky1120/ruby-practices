@@ -16,7 +16,7 @@ class Game
   private
 
   def parse_pinfall_text(pinfall_text)
-    all_shots = pinfall_text.split(',').map { |shot| Shot.new(shot) }
+    all_shots = pinfall_text.split(',').map { |pin| Shot.new(pin) }
     shots = []
     all_shots.each_with_object([]) do |shot, shots_each_frame|
       shots << shot
