@@ -32,7 +32,9 @@ class Frame
     next_frame = frames[@index + 1]
     after_next_frame = frames[@index + 2]
     if strike?
-      (next_frame.shots + (after_next_frame&.shots || [])).first(2).sum(&:score)
+      following_shots = next_frame.shots
+      following_shots += after_next_frame&.shots if after_next_frame
+      following_shots.first(2).sum(&:score)
     elsif spare?
       next_frame.shots[0].score
     else

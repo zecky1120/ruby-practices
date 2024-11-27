@@ -16,19 +16,18 @@ class Game
   private
 
   def parse_pinfall_text(pinfall_text)
-    all_shots = pinfall_text.split(',').map { |pin| Shot.new(pin) }
-    shots = []
+    all_shots = pinfall_text.split(',').map { |pinfall| Shot.new(pinfall) }
+    tmp_shots = []
     all_shots.each_with_object([]) do |shot, shots_each_frame|
-      shots << shot
+      tmp_shots << shot
       if shots_each_frame.length < 10
-        if shots.length >= 2 || shot.strike?
-          shots_each_frame << shots
-          shots = []
+        if tmp_shots.length >= 2 || shot.strike?
+          shots_each_frame << tmp_shots
+          tmp_shots = []
         end
       else
         shots_each_frame.last << shot
       end
-      shots_each_frame
     end
   end
 end
