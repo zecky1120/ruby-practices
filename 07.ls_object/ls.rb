@@ -4,8 +4,8 @@ class ListSegments
   COLUMNS = 3
 
   def display_files_list
-    number_of_column_files = find_files.size.ceildiv(COLUMNS)
-    reshape_column_files = successfully_transposed_files(find_files.each_slice(number_of_column_files).to_a)
+    number_of_column_file = find_files.size.ceildiv(COLUMNS)
+    reshape_column_files = successfully_transposed_files(find_files.each_slice(number_of_column_file).to_a)
     reshape_column_files.map do |row_file|
       row_file.map { |file| file.to_s.ljust(calculate_string_max_size + 2) }.join.rstrip
     end.join("\n")
