@@ -4,61 +4,56 @@ require 'etc'
 require_relative 'ls'
 
 class Option < LS
-  def display_option_file_list
-    if @params[:l]
-      display_long_formats(find_files)
-    else
-      display_files_list(find_files)
-    end
-  end
-
   def display_long_formats(find_files)
-    long_formats = find_files.map do |file_path|
+    rows = find_files.map do |file_path|
       stat = File::Stat.new(file_path)
       build_rowfile(file_path, stat)
     end
-    total_block = long_formats.sum { |data| data[:blocks] }
+    total_block = rows.sum { |row| row[:blocks] }
     total = "total #{total_block}"
-    body = long_format_body(long_formats)
-    puts [total, *body]
+    body = format_rows(rows)
+    [total, body]
   end
 
-  def long_format_body(files)
-    max_size = %i[nlink owner group size].map do |value|
-      find_max_size(files, value)
+  def find_max_size(rows, key)
+    rows.map { |data| data[key].to_s.size }.max
+  end
+
+  def format_rows(rows)
+    max_lengths = %i[nlink owner group size].map { |key| find_max_size(rows, key) }
+    p max_lengths
+    rows.map do |row|
+      [
+        row[:filemode],
+        row[:nlink].to_s.rjust(max_lengths[0] + 1),
+        row[:owner].ljust(max_lengths[1]),
+        row[:group].rjust(max_lengths[2] + 1),
+        row[:size].to_s.rjust(max_lengths[3] + 1),
+        row[:mtime],
+        row[:basename]
+      ].join(' ')
     end
-    files.map do |data|
-      format_rows(data, *max_size)
-    end
-  end
-
-  def find_max_size(long_formats, key)
-    long_formats.map { |data| data[key].to_s.size }.max
-  end
-
-  def format_rows(row, max_nlink, max_owner, max_group, max_size)
-    [
-      row[:filemode],
-      "  #{row[:nlink].to_s.rjust(max_nlink)}",
-      " #{row[:owner].ljust(max_owner)}",
-      "  #{row[:group].rjust(max_group)}",
-      "  #{row[:size].to_s.rjust(max_size)}",
-      " #{row[:mtime]}",
-      row[:basename]
-    ].join
   end
 
   def build_rowfile(file_path, stat)
     {
       blocks: stat.blocks,
-      filemode: format_type_and_mode(stat),
+      filemode: to_s_filetype(stat),
       nlink: stat.nlink,
       owner: Etc.getpwuid(stat.uid).name,
       group: Etc.getgrgid(stat.gid).name,
       size: stat.size,
-      mtime: stat.mtime.strftime('%_m %_d %Y %H:%M '),
+      mtime: last_update(stat),
       basename: File.basename(file_path)
     }
+  end
+
+  def last_update(stat)
+    current_time = Time.now
+    time_stamp = stat.mtime
+    half_year_ago = current_time - 15_552_000
+    time_or_year = time_stamp >= half_year_ago ? time_stamp.strftime('%H:%M') : time_stamp.strftime('%Y')
+    "#{time_stamp.strftime('%_m %_d').rjust(5)} #{time_or_year.rjust(5)}"
   end
 
   GET_FILE_FTYPE = {
@@ -82,7 +77,7 @@ class Option < LS
     '7' => 'rwx'
   }.freeze
 
-  def format_type_and_mode(stat)
+  def to_s_filetype(stat)
     ftype = GET_FILE_FTYPE[stat.ftype]
     octal = stat.mode.to_s(8)
     slice_octal = octal.slice(-3, 3)
