@@ -8,6 +8,21 @@ class FileAttribute
     @file_stat = File::Stat.new(@file)
   end
 
+  def build_rowfile
+    {
+      blocks: @file_stat.blocks,
+      filemode: convert_filetype,
+      nlink: @file_stat.nlink,
+      owner: Etc.getpwuid(@file_stat.uid).name,
+      group: Etc.getgrgid(@file_stat.gid).name,
+      size: @file_stat.size,
+      mtime: last_update,
+      basename: File.basename(@file)
+    }
+  end
+
+  private
+
   GET_FILE_FTYPE = {
     'fifo' => 'p',
     'characterSpecial' => 'c',
@@ -56,19 +71,6 @@ class FileAttribute
     else
       perm
     end
-  end
-
-  def build_rowfile
-    {
-      blocks: @file_stat.blocks,
-      filemode: convert_filetype,
-      nlink: @file_stat.nlink,
-      owner: Etc.getpwuid(@file_stat.uid).name,
-      group: Etc.getgrgid(@file_stat.gid).name,
-      size: @file_stat.size,
-      mtime: last_update,
-      basename: File.basename(@file)
-    }
   end
 
   def last_update
