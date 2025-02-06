@@ -9,7 +9,7 @@ class Command
     @params = parse_params(option)
   end
 
-  def output
+  def main
     @params[:l] ? LongFormat.new(files).display : FileList.new(files).display
   end
 

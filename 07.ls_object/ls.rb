@@ -3,4 +3,4 @@
 require_relative 'command'
 
 ls = Command.new(ARGV)
-puts ls.output
+puts ls.main
