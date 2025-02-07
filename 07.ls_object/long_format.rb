@@ -9,6 +9,15 @@ class LongFormat
 
   def display
     rows = @files.map { |file| FileAttribute.new(file).build_rowfile }
+    total_block = rows.sum { |row| row[:blocks] }
+    total = "total #{total_block}"
+    body = format_rows(rows)
+    [total, body]
+  end
+
+  private
+
+  def format_rows(rows)
     max_sizes = %i[nlink owner group size].map do |key|
       rows.map { |row| row[key].to_s.size }.max
     end
