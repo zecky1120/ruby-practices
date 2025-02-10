@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FileList
+class ShortFormat
   COLUMN = 5
 
   def initialize(files)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative 'file_list'
+require_relative 'short_format'
 require_relative 'long_format'
 
 class Command
@@ -10,7 +10,7 @@ class Command
   end
 
   def main
-    @params[:l] ? LongFormat.new(files).display : FileList.new(files).display
+    @params[:l] ? LongFormat.new(files).display : ShortFormat.new(files).display
   end
 
   private
